@@ -1,6 +1,5 @@
 package page.clab.api.domain.members.support.adapter.out.persistence;
 
-
 import org.mapstruct.Mapper;
 import page.clab.api.domain.members.support.domain.Support;
 
@@ -8,5 +7,6 @@ import page.clab.api.domain.members.support.domain.Support;
 public interface SupportMapper {
 
     SupportJpaEntity toEntity(Support support);
+
     Support toDomain(SupportJpaEntity entity);
 }

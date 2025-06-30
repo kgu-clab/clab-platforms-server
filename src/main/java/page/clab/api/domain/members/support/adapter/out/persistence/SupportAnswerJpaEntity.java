@@ -26,7 +26,7 @@ import page.clab.api.global.common.domain.BaseEntity;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @SQLDelete(sql = "UPDATE support_answer SET is_deleted = true WHERE id = ?")
 @SQLRestriction("is_deleted = false")
-public class AnswerJpaEntity extends BaseEntity {
+public class SupportAnswerJpaEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

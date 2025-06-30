@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
-public class AnswerResponseDto {
+public class SupportAnswerResponseDto {
 
     private String content;
     private String responder;

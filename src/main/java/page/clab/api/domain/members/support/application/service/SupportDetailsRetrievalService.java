@@ -7,9 +7,9 @@ import page.clab.api.domain.memberManagement.member.application.dto.shared.Membe
 import page.clab.api.domain.members.support.application.dto.mapper.SupportDtoMapper;
 import page.clab.api.domain.members.support.application.dto.response.SupportDetailsResponseDto;
 import page.clab.api.domain.members.support.application.port.in.RetrieveSupportDetailsUseCase;
-import page.clab.api.domain.members.support.application.port.out.RetrieveAnswerPort;
+import page.clab.api.domain.members.support.application.port.out.RetrieveSupportAnswerPort;
 import page.clab.api.domain.members.support.application.port.out.RetrieveSupportPort;
-import page.clab.api.domain.members.support.domain.Answer;
+import page.clab.api.domain.members.support.domain.SupportAnswer;
 import page.clab.api.domain.members.support.domain.Support;
 import page.clab.api.domain.members.support.domain.SupportCategory;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
@@ -21,7 +21,7 @@ import page.clab.api.global.exception.ErrorCode;
 public class SupportDetailsRetrievalService implements RetrieveSupportDetailsUseCase {
 
     private final RetrieveSupportPort retrieveSupportPort;
-    private final RetrieveAnswerPort retrieveAnswerPort;
+    private final RetrieveSupportAnswerPort retrieveSupportAnswerPort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
     private final SupportDtoMapper mapper;
 
@@ -35,9 +35,9 @@ public class SupportDetailsRetrievalService implements RetrieveSupportDetailsUse
 
         MemberDetailedInfoDto boardMemberInfo = getMemberDetailedInfoByBoard(support);
 
-        Answer answer = retrieveAnswerPort.findAnswerBySupportId(supportId);
+        SupportAnswer supportAnswer = retrieveSupportAnswerPort.findAnswerBySupportId(supportId);
         boolean isOwner = support.isOwner(currentMemberInfo.getMemberId());
-        return mapper.toDto(support, boardMemberInfo, isOwner, answer);
+        return mapper.toDto(support, boardMemberInfo, isOwner, supportAnswer);
     }
 
     private MemberDetailedInfoDto getMemberDetailedInfoByBoard(Support support) {

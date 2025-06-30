@@ -5,30 +5,31 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.members.support.application.dto.request.AnswerUpdateRequestDto;
-import page.clab.api.domain.members.support.application.port.in.UpdateAnswerUseCase;
+import page.clab.api.domain.members.support.application.dto.request.SupportAnswerRequestDto;
+import page.clab.api.domain.members.support.application.port.in.RegisterSupportAnswerUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
+
 @RestController
 @RequestMapping("/api/v1/supports")
 @RequiredArgsConstructor
 @Tag(name = "Members - Support", description = "문의 사항")
-public class AnswerUpdateController {
+public class SupportAnswerRegisterController {
 
-    private final UpdateAnswerUseCase updateAnswerUseCase;
+    private final RegisterSupportAnswerUseCase registerSupportAnswerUseCase;
 
-    @Operation(summary = "[U] 문의 사항 답변 수정", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @Operation(summary = "[U] 문의 사항 답변 생성", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @PreAuthorize("hasRole('ADMIN')")
-    @PatchMapping("/{supportId}/answer")
+    @PostMapping("/{supportId}/answer")
     public ApiResponse<Long> registerSupport(
-        @PathVariable(name = "supportId") Long supportId,
-        @Valid @RequestBody AnswerUpdateRequestDto requestDto
+        @PathVariable(name = "supportId") final Long supportId,
+        @Valid @RequestBody SupportAnswerRequestDto requestDto
     ) {
-        Long id = updateAnswerUseCase.updateAnswer(supportId, requestDto);
+        Long id = registerSupportAnswerUseCase.registerAnswer(supportId,requestDto);
         return ApiResponse.success(id);
     }
 }

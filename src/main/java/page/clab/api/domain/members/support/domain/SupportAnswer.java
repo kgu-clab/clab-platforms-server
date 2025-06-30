@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.Builder;
-import page.clab.api.domain.members.support.application.dto.request.AnswerUpdateRequestDto;
+import page.clab.api.domain.members.support.application.dto.request.SupportAnswerUpdateRequestDto;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -17,7 +17,7 @@ import java.util.Optional;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class Answer {
+public class SupportAnswer {
 
     private Long id;
     private Long supportId;
@@ -32,7 +32,7 @@ public class Answer {
         isDeleted = true;
     }
 
-    public void update(AnswerUpdateRequestDto requestDto) {
+    public void update(SupportAnswerUpdateRequestDto requestDto) {
         Optional.ofNullable(requestDto.getContent()).ifPresent(this::setContent);
     }
 }
