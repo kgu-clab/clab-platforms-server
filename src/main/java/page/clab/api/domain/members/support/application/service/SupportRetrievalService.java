@@ -9,7 +9,6 @@ import page.clab.api.domain.memberManagement.member.application.dto.shared.Membe
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.domain.members.support.application.dto.mapper.SupportDtoMapper;
 import page.clab.api.domain.members.support.application.dto.response.SupportListResponseDto;
-import page.clab.api.domain.members.support.application.dto.shared.SupportAnswerInfoDto;
 import page.clab.api.domain.members.support.application.port.in.RetrieveSupportUseCase;
 import page.clab.api.domain.members.support.application.port.out.RetrieveSupportPort;
 import page.clab.api.domain.members.support.domain.Support;
@@ -38,13 +37,6 @@ public class SupportRetrievalService implements RetrieveSupportUseCase {
 
         return new PagedResponseDto<>(supports.map(support ->
                 mapper.toListDto(support,getMemberDetailedInfoBySupport(support))));
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public SupportAnswerInfoDto getSupportAnswerInfoById(Long supportId) {
-        Support support = retrieveSupportPort.getById(supportId);
-        return mapper.toDto(support);
     }
 
     @Transactional(readOnly = true)

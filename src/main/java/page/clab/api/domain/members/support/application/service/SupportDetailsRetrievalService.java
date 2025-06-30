@@ -31,9 +31,7 @@ public class SupportDetailsRetrievalService implements RetrieveSupportDetailsUse
         MemberDetailedInfoDto currentMemberInfo = externalRetrieveMemberUseCase.getCurrentMemberDetailedInfo();
         Support support = retrieveSupportPort.getById(supportId);
 
-        if(!isAdminRole(currentMemberInfo) && isBugCategory(support)) {
-            throw new BaseException(ErrorCode.ACCESS_DENIED);
-        }
+        validateAccessible(currentMemberInfo,support);
 
         MemberDetailedInfoDto boardMemberInfo = getMemberDetailedInfoByBoard(support);
 
@@ -46,8 +44,10 @@ public class SupportDetailsRetrievalService implements RetrieveSupportDetailsUse
         return externalRetrieveMemberUseCase.getMemberDetailedInfoById(support.getMemberId());
     }
 
-    private boolean isAdminRole(MemberDetailedInfoDto memberInfo) {
-        return memberInfo.isAdminRole();
+    private void validateAccessible(MemberDetailedInfoDto memberInfo, Support support) {
+        if(!memberInfo.isAdminRole() && isBugCategory(support)) {
+            throw new BaseException(ErrorCode.ACCESS_DENIED);
+        }
     }
 
     private boolean isBugCategory(Support support) {

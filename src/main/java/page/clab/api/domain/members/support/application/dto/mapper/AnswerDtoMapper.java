@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberBasicInfoDto;
 import page.clab.api.domain.members.support.application.dto.request.AnswerRequestDto;
+import page.clab.api.domain.members.support.application.dto.response.AnswerResponseDto;
 import page.clab.api.domain.members.support.domain.Answer;
 
 @Component
@@ -17,6 +18,14 @@ public class AnswerDtoMapper {
             .supportId(supportId)
             .content(requestDto.getContent())
             .isDeleted(false)
+            .build();
+    }
+
+    public AnswerResponseDto from(Answer answer) {
+        return AnswerResponseDto.builder()
+            .content(answer.getContent())
+            .responder(answer.getAdminName())
+            .createdAt(answer.getCreatedAt())
             .build();
     }
 }

@@ -53,6 +53,10 @@ public class Support {
         }
     }
 
+    public boolean hasAnswer() {
+        return this.status == SupportStatus.COMPLETED;
+    }
+
     public void markAsCompleted() {
         this.status = SupportStatus.COMPLETED;
     }

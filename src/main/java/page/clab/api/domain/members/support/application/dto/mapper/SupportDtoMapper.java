@@ -6,7 +6,6 @@ import page.clab.api.domain.community.board.application.dto.response.WriterInfo;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberBasicInfoDto;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.domain.members.support.application.dto.request.SupportRequestDto;
-import page.clab.api.domain.members.support.application.dto.response.AnswerResponseDto;
 import page.clab.api.domain.members.support.application.dto.response.SupportDetailsResponseDto;
 import page.clab.api.domain.members.support.application.dto.response.SupportListResponseDto;
 import page.clab.api.domain.members.support.application.dto.response.SupportMyResponseDto;
@@ -25,7 +24,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SupportDtoMapper {
 
-    private final FileDtoMapper mapper;
+    private final FileDtoMapper fileMapper;
+    private final AnswerDtoMapper answerMapper;
 
     public Support fromDto(SupportRequestDto requestDto, String memberId, List<UploadedFile> uploadedFiles) {
         return Support.builder()
@@ -74,10 +74,10 @@ public class SupportDtoMapper {
             .title(support.getTitle())
             .content(support.getContent())
             .category(support.getCategory().getKey())
-            .uploadedFiles(mapper.toDto(support.getUploadedFiles()))
+            .uploadedFiles(fileMapper.toDto(support.getUploadedFiles()))
             .isOwner(isOwner)
             .status(support.getStatus().getKey())
-            .answer(answer != null ? AnswerResponseDto.from(answer) : null)
+            .answer(answer != null ? answerMapper.from(answer) : null)
             .createdAt(support.getCreatedAt())
             .build();
     }
