@@ -27,7 +27,6 @@ public class MySupportRetrievalService implements RetrieveMySupportUseCase {
     public PagedResponseDto<SupportMyResponseDto> retrieveMySupports(Pageable pageable) {
         MemberBasicInfoDto currentMemberInfo = externalRetrieveMemberUseCase.getCurrentMemberBasicInfo();
         Page<Support> supports = retrieveSupportPort.findAllByWriterId(currentMemberInfo.getMemberId(), pageable);
-        return new PagedResponseDto<>(supports.map(support ->
-            mapper.toDto(support, currentMemberInfo)));
+        return new PagedResponseDto<>(supports.map(mapper::toMyDto));
     }
 }

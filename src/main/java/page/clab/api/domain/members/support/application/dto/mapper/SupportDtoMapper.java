@@ -27,10 +27,10 @@ public class SupportDtoMapper {
     private final FileDtoMapper fileMapper;
     private final SupportAnswerDtoMapper answerMapper;
 
-    public Support fromDto(SupportRequestDto requestDto, String memberId, List<UploadedFile> uploadedFiles) {
+    public Support fromDto(SupportRequestDto requestDto, MemberBasicInfoDto memberInfo, List<UploadedFile> uploadedFiles) {
         return Support.builder()
-            .memberId(memberId)
-            .nickname(RandomNicknameUtil.makeRandomNickname())
+            .memberId(memberInfo.getMemberId())
+            .nickname(requestDto.isWantAnonymous() ? RandomNicknameUtil.makeRandomNickname() : null)
             .title(requestDto.getTitle())
             .content(requestDto.getContent())
             .uploadedFiles(uploadedFiles)
@@ -54,11 +54,11 @@ public class SupportDtoMapper {
             .build();
     }
 
-    public SupportMyResponseDto toDto(Support support, MemberBasicInfoDto memberInfo) {
+    public SupportMyResponseDto toMyDto(Support support) {
         return SupportMyResponseDto.builder()
             .id(support.getId())
             .title(support.getTitle())
-            .name(support.isWantAnonymous() ? support.getNickname() : memberInfo.getMemberName())
+            .name(support.getNickname())
             .category(support.getCategory().getKey())
             .status(support.getStatus().getKey())
             .createdAt(support.getCreatedAt())
@@ -70,7 +70,7 @@ public class SupportDtoMapper {
         return SupportDetailsResponseDto.builder()
             .id(support.getId())
             .writerId(writerInfo.getId())
-            .name(support.isWantAnonymous() ? support.getNickname() : writerInfo.getName())
+            .name(writerInfo.getName())
             .title(support.getTitle())
             .content(support.getContent())
             .category(support.getCategory().getKey())

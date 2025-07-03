@@ -46,7 +46,6 @@ public class SupportJpaEntity extends BaseEntity {
     @Column(name = "member_id",nullable = false)
     private String memberId;
 
-    @Column(nullable = false)
     private String nickname;
 
     @Column(nullable = false)

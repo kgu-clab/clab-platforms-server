@@ -4,6 +4,7 @@ package page.clab.api.domain.members.support.application.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberBasicInfoDto;
 import page.clab.api.domain.members.support.application.dto.mapper.SupportDtoMapper;
 import page.clab.api.domain.members.support.application.dto.request.SupportRequestDto;
 import page.clab.api.domain.members.support.application.port.in.RegisterSupportUseCase;
@@ -28,8 +29,8 @@ public class SupportRegisterService implements RegisterSupportUseCase {
     @Override
     public Long registerSupport(SupportRequestDto requestDto) {
         List<UploadedFile> uploadedFiles = uploadedFileService.getUploadedFilesByUrls(requestDto.getFileUrlList());
-        String currentMemberId = externalRetrieveMemberUseCase.getCurrentMemberId();
-        Support support = mapper.fromDto(requestDto, currentMemberId, uploadedFiles);
+        MemberBasicInfoDto currentMemberInfo = externalRetrieveMemberUseCase.getCurrentMemberBasicInfo();
+        Support support = mapper.fromDto(requestDto, currentMemberInfo, uploadedFiles);
         return registerSupportPort.save(support).getId();
     }
 }
