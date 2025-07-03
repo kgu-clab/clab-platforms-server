@@ -21,7 +21,7 @@ public class SupportDetailsRetrievalController {
 
     private final RetrieveSupportDetailsUseCase retrieveSupportDetailsUseCase;
 
-    @Operation(summary = "[U] 문의 사항 상세 조회", description = "INQUIRY 조회는 ROLE_USER 이상의 권한이 필요함<br>" +
+    @Operation(summary = "[U,A] 문의 사항 상세 조회", description = "INQUIRY 조회는 ROLE_USER 이상의 권한이 필요함<br>" +
         "모든 게시글의 조회는 ROLE_ADMIN 이상의 권한이 필요함")
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/{supportId}")

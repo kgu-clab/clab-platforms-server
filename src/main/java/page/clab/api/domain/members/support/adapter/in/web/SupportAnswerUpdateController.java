@@ -21,7 +21,7 @@ public class SupportAnswerUpdateController {
 
     private final UpdateSupportAnswerUseCase updateSupportAnswerUseCase;
 
-    @Operation(summary = "[U] 문의 사항 답변 수정", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @Operation(summary = "[A] 문의 사항 답변 수정", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{supportId}/answer")
     public ApiResponse<Long> registerSupport(

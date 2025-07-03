@@ -22,7 +22,7 @@ public class SupportAnswerRegisterController {
 
     private final RegisterSupportAnswerUseCase registerSupportAnswerUseCase;
 
-    @Operation(summary = "[U] 문의 사항 답변 생성", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @Operation(summary = "[A] 문의 사항 답변 생성", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{supportId}/answer")
     public ApiResponse<Long> registerSupport(

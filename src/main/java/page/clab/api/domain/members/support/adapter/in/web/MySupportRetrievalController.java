@@ -26,7 +26,7 @@ public class MySupportRetrievalController {
     private final RetrieveMySupportUseCase retrieveMySupportUseCase;
     private final PageableUtils pageableUtils;
 
-    @Operation(summary = "[G] 내가 쓴 문의 게시글 목록 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+    @Operation(summary = "[U] 내가 쓴 문의 게시글 목록 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "DTO의 필드명을 기준으로 정렬 가능하며, 정렬 방향은 오름차순(asc)과 내림차순(desc)이 가능함")
     @PreAuthorize("hasRole(('USER'))")
     @GetMapping("/my-supports")
