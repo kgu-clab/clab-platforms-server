@@ -45,7 +45,11 @@ public class SupportDetailsRetrievalService implements RetrieveSupportDetailsUse
     }
 
     private void validateAccessible(MemberDetailedInfoDto memberInfo, Support support) {
-        if(!memberInfo.isAdminRole() && isBugCategory(support)) {
+        boolean isNotOwner = !memberInfo.getMemberId().equals(support.getMemberId());
+        boolean isNotAdmin = !memberInfo.isAdminRole();
+        boolean isBugCategory = isBugCategory(support);
+
+        if (isNotOwner && isNotAdmin && isBugCategory) {
             throw new BaseException(ErrorCode.ACCESS_DENIED);
         }
     }
