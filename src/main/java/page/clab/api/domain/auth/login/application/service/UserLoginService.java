@@ -88,7 +88,7 @@ public class UserLoginService implements ManageLoginUseCase {
         String memberId = loginMember.getMemberId();
         String header;
         boolean isOtpEnabled = Optional.of(loginMember.isOtpEnabled()).orElse(false);
-        if (isOtpEnabled || loginMember.isAdminRole()) {
+        if (isOtpEnabled) {
             if (!manageAuthenticatorUseCase.isAuthenticatorExist(memberId)) {
                 String secretKey = manageAuthenticatorUseCase.generateSecretKey(memberId);
                 header = LoginHeader.create(secretKey).toJson();
