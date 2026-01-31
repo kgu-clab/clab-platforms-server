@@ -104,11 +104,7 @@ public class Member implements UserDetails {
         Optional.ofNullable(requestDto.getGithubUrl()).ifPresent(this::setGithubUrl);
         Optional.ofNullable(requestDto.getStudentStatus()).ifPresent(this::setStudentStatus);
         Optional.ofNullable(requestDto.getImageUrl()).ifPresent(this::setImageUrl);
-        if (isAdminRole()) {
-            isOtpEnabled = true;
-        } else {
-            Optional.ofNullable(requestDto.getIsOtpEnabled()).ifPresent(this::setIsOtpEnabled);
-        }
+        Optional.ofNullable(requestDto.getIsOtpEnabled()).ifPresent(this::setIsOtpEnabled);
     }
 
     public void delete() {
