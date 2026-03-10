@@ -11,7 +11,8 @@ import page.clab.api.domain.library.bookLoanRecord.application.port.out.Register
 import page.clab.api.domain.library.bookLoanRecord.application.port.out.RetrieveBookLoanRecordPort;
 import page.clab.api.domain.library.bookLoanRecord.domain.BookLoanRecord;
 import page.clab.api.domain.library.bookLoanRecord.domain.BookLoanStatus;
-import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Component
 @RequiredArgsConstructor
@@ -34,7 +35,8 @@ public class BookLoanRecordPersistenceAdapter implements
         return bookLoanRecordRepository.findById(bookLoanRecordId)
             .map(bookLoanRecordMapper::toDomain)
             .orElseThrow(
-                () -> new NotFoundException("[BookLoanRecord] id: " + bookLoanRecordId + "에 해당하는 대출 기록이 존재하지 않습니다."));
+                () -> new BaseException(ErrorCode.NOT_FOUND,
+                    "[BookLoanRecord] id: " + bookLoanRecordId + "에 해당하는 대출 기록이 존재하지 않습니다."));
     }
 
     @Override
@@ -59,7 +61,8 @@ public class BookLoanRecordPersistenceAdapter implements
     public BookLoanRecord getByBookIdAndReturnedAtIsNullAndStatus(Long bookId, BookLoanStatus bookLoanStatus) {
         return bookLoanRecordRepository.findByBookIdAndReturnedAtIsNullAndStatus(bookId, bookLoanStatus)
             .map(bookLoanRecordMapper::toDomain)
-            .orElseThrow(() -> new NotFoundException("[Book] id: " + bookId + "에 해당하는 대출 기록이 존재하지 않습니다."));
+            .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND,
+                "[Book] id: " + bookId + "에 해당하는 대출 기록이 존재하지 않습니다."));
     }
 
     @Override

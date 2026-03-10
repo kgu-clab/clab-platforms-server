@@ -10,7 +10,6 @@ import page.clab.api.domain.members.donation.application.port.out.RegisterDonati
 import page.clab.api.domain.members.donation.application.port.out.RetrieveDonationPort;
 import page.clab.api.domain.members.donation.domain.Donation;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
-import page.clab.api.global.exception.PermissionDeniedException;
 
 @Service
 @RequiredArgsConstructor
@@ -22,8 +21,7 @@ public class DonationUpdateService implements UpdateDonationUseCase {
 
     @Transactional
     @Override
-    public Long updateDonation(Long donationId, DonationUpdateRequestDto donationUpdateRequestDto)
-        throws PermissionDeniedException {
+    public Long updateDonation(Long donationId, DonationUpdateRequestDto donationUpdateRequestDto) {
         MemberDetailedInfoDto currentMemberInfo = externalRetrieveMemberUseCase.getCurrentMemberDetailedInfo();
         Donation donation = retrieveDonationPort.getById(donationId);
         donation.validateAccessPermission(currentMemberInfo.isSuperAdminRole());

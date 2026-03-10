@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.memberManagement.workExperience.application.dto.request.WorkExperienceUpdateRequestDto;
 import page.clab.api.domain.memberManagement.workExperience.application.port.in.UpdateWorkExperienceUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
-import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
 @RequestMapping("/api/v1/work-experiences")
@@ -30,7 +29,7 @@ public class WorkExperienceUpdateController {
     public ApiResponse<Long> updateWorkExperience(
         @PathVariable(name = "workExperienceId") Long workExperienceId,
         @Valid @RequestBody WorkExperienceUpdateRequestDto requestDto
-    ) throws PermissionDeniedException {
+    ) {
         Long id = updateWorkExperienceUseCase.updateWorkExperience(workExperienceId, requestDto);
         return ApiResponse.success(id);
     }

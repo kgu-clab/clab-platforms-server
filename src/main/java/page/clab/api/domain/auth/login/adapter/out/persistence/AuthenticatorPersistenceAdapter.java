@@ -7,7 +7,8 @@ import page.clab.api.domain.auth.login.application.port.out.RegisterAuthenticato
 import page.clab.api.domain.auth.login.application.port.out.RemoveAuthenticatorPort;
 import page.clab.api.domain.auth.login.application.port.out.RetrieveAuthenticatorPort;
 import page.clab.api.domain.auth.login.domain.Authenticator;
-import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Component
 @RequiredArgsConstructor
@@ -35,7 +36,7 @@ public class AuthenticatorPersistenceAdapter implements
     public Authenticator getById(String memberId) {
         return authenticatorRepository.findById(memberId)
             .map(authenticatorMapper::toDomain)
-            .orElseThrow(() -> new NotFoundException(
+            .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND,
                 "[Authenticator] memberId: " + memberId + "에 해당하는 Authenticator가 존재하지 않습니다."));
     }
 

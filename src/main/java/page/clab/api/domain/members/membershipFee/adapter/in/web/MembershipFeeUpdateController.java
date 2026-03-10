@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.members.membershipFee.application.dto.request.MembershipFeeUpdateRequestDto;
 import page.clab.api.domain.members.membershipFee.application.port.in.UpdateMembershipFeeUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
-import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
 @RequestMapping("/api/v1/membership-fees")
@@ -29,7 +28,7 @@ public class MembershipFeeUpdateController {
     public ApiResponse<Long> updateMembershipFee(
         @PathVariable(name = "membershipFeeId") Long membershipFeeId,
         @Valid @RequestBody MembershipFeeUpdateRequestDto requestDto
-    ) throws PermissionDeniedException {
+    ) {
         Long id = updateMembershipFeeUseCase.updateMembershipFee(membershipFeeId, requestDto);
         return ApiResponse.success(id);
     }

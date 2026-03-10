@@ -15,8 +15,6 @@ import page.clab.api.domain.memberManagement.position.application.port.in.Retrie
 import page.clab.api.domain.memberManagement.position.domain.PositionType;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.exception.InvalidColumnException;
-import page.clab.api.global.exception.SortingArgumentException;
 import page.clab.api.global.util.PageableUtils;
 
 @RestController
@@ -41,7 +39,7 @@ public class PositionsByConditionsRetrievalController {
         @RequestParam(name = "size", defaultValue = "20") int size,
         @RequestParam(name = "sortBy", defaultValue = "year, positionType") List<String> sortBy,
         @RequestParam(name = "sortDirection", defaultValue = "desc, asc") List<String> sortDirection
-    ) throws SortingArgumentException, InvalidColumnException {
+    ) {
         Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, PositionResponseDto.class);
         PagedResponseDto<PositionResponseDto> positions = retrievePositionsByConditionsUseCase.retrievePositions(year,
             positionType, pageable);

@@ -12,7 +12,8 @@ import page.clab.api.domain.memberManagement.member.application.port.out.Retriev
 import page.clab.api.domain.memberManagement.member.application.port.out.UpdateMemberPort;
 import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.domain.memberManagement.member.domain.Role;
-import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Component
 @RequiredArgsConstructor
@@ -63,7 +64,8 @@ public class MemberPersistenceAdapter implements
     @Override
     public Member getFirstByRole(Role role) {
         MemberJpaEntity jpaEntity = memberRepository.findFirstByRole(role)
-            .orElseThrow(() -> new NotFoundException("[Member] role: " + role + "에 해당하는 회원이 존재하지 않습니다."));
+            .orElseThrow(
+                () -> new BaseException(ErrorCode.NOT_FOUND, "[Member] role: " + role + "에 해당하는 회원이 존재하지 않습니다."));
         return memberMapper.toDomain(jpaEntity);
     }
 
@@ -75,7 +77,8 @@ public class MemberPersistenceAdapter implements
     @Override
     public Member getById(String memberId) {
         MemberJpaEntity jpaEntity = memberRepository.findById(memberId)
-            .orElseThrow(() -> new NotFoundException("[Member] id: " + memberId + "에 해당하는 회원이 존재하지 않습니다."));
+            .orElseThrow(
+                () -> new BaseException(ErrorCode.NOT_FOUND, "[Member] id: " + memberId + "에 해당하는 회원이 존재하지 않습니다."));
         return memberMapper.toDomain(jpaEntity);
     }
 
@@ -103,7 +106,8 @@ public class MemberPersistenceAdapter implements
     @Override
     public Member getByEmail(String email) {
         MemberJpaEntity jpaEntity = memberRepository.findByEmail(email)
-            .orElseThrow(() -> new NotFoundException("[Member] email: " + email + "을 사용하는 회원이 존재하지 않습니다."));
+            .orElseThrow(
+                () -> new BaseException(ErrorCode.NOT_FOUND, "[Member] email: " + email + "을 사용하는 회원이 존재하지 않습니다."));
         return memberMapper.toDomain(jpaEntity);
     }
 

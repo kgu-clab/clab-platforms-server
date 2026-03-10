@@ -9,7 +9,8 @@ import org.springframework.stereotype.Component;
 import page.clab.api.domain.hiring.application.application.port.out.RegisterApplicationPort;
 import page.clab.api.domain.hiring.application.application.port.out.RetrieveApplicationPort;
 import page.clab.api.domain.hiring.application.domain.Application;
-import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Component
 @RequiredArgsConstructor
@@ -37,7 +38,8 @@ public class ApplicationPersistenceAdapter implements
     public Application getById(ApplicationId applicationId) {
         return applicationRepository.findById(applicationId)
             .map(applicationMapper::toDomain)
-            .orElseThrow(() -> new NotFoundException("[Application] id: " + applicationId + "에 해당하는 지원서가 존재하지 않습니다."));
+            .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND,
+                "[Application] id: " + applicationId + "에 해당하는 지원서가 존재하지 않습니다."));
     }
 
     @Override
@@ -57,7 +59,7 @@ public class ApplicationPersistenceAdapter implements
     public Application getByRecruitmentIdAndStudentId(Long recruitmentId, String studentId) {
         return applicationRepository.findByRecruitmentIdAndStudentId(recruitmentId, studentId)
             .map(applicationMapper::toDomain)
-            .orElseThrow(() -> new NotFoundException(
+            .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND,
                 "[Application] recruitmentId: " + recruitmentId + ", studentId: " + studentId
                     + "에 해당하는 지원서가 존재하지 않습니다."));
     }

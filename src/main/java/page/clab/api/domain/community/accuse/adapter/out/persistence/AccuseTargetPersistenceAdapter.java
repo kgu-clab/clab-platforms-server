@@ -10,7 +10,8 @@ import page.clab.api.domain.community.accuse.application.port.out.RetrieveAccuse
 import page.clab.api.domain.community.accuse.domain.AccuseStatus;
 import page.clab.api.domain.community.accuse.domain.AccuseTarget;
 import page.clab.api.domain.community.accuse.domain.TargetType;
-import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Component
 @RequiredArgsConstructor
@@ -39,7 +40,8 @@ public class AccuseTargetPersistenceAdapter implements
         return accuseTargetRepository.findById(accuseTargetId)
             .map(accuseTargetMapper::toDomain)
             .orElseThrow(
-                () -> new NotFoundException("[AccuseTarget] id: " + accuseTargetId + "에 해당하는 신고 대상이 존재하지 않습니다."));
+                () -> new BaseException(ErrorCode.NOT_FOUND,
+                    "[AccuseTarget] id: " + accuseTargetId + "에 해당하는 신고 대상이 존재하지 않습니다."));
     }
 
     @Override

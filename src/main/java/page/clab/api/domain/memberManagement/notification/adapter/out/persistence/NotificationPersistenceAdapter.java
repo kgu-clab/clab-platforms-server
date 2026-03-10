@@ -8,7 +8,8 @@ import org.springframework.stereotype.Component;
 import page.clab.api.domain.memberManagement.notification.application.port.out.RegisterNotificationPort;
 import page.clab.api.domain.memberManagement.notification.application.port.out.RetrieveNotificationPort;
 import page.clab.api.domain.memberManagement.notification.domain.Notification;
-import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Component
 @RequiredArgsConstructor
@@ -38,7 +39,8 @@ public class NotificationPersistenceAdapter implements
     public Notification getById(Long id) {
         return repository.findById(id)
             .map(mapper::toDomain)
-            .orElseThrow(() -> new NotFoundException("[Notification] id: " + id + "에 해당하는 알림이 존재하지 않습니다."));
+            .orElseThrow(
+                () -> new BaseException(ErrorCode.NOT_FOUND, "[Notification] id: " + id + "에 해당하는 알림이 존재하지 않습니다."));
     }
 
     @Override

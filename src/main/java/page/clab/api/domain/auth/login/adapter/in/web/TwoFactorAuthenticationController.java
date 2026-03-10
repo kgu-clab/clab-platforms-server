@@ -16,8 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.auth.login.application.dto.request.TwoFactorAuthenticationRequestDto;
 import page.clab.api.domain.auth.login.application.dto.response.LoginResult;
-import page.clab.api.domain.auth.login.application.exception.LoginFailedException;
-import page.clab.api.domain.auth.login.application.exception.MemberLockedException;
 import page.clab.api.domain.auth.login.application.port.in.ManageLoginUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 
@@ -44,7 +42,7 @@ public class TwoFactorAuthenticationController {
         HttpServletRequest request,
         HttpServletResponse response,
         @Valid @RequestBody TwoFactorAuthenticationRequestDto requestDto
-    ) throws MemberLockedException, LoginFailedException {
+    ) {
         LoginResult result = manageLoginUseCase.authenticate(request, requestDto);
         response.setHeader(authHeader, result.getHeader());
         return ApiResponse.success(result.getBody());

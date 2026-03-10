@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.memberManagement.workExperience.application.port.in.RemoveWorkExperienceUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
-import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
 @RequestMapping("/api/v1/work-experiences")
@@ -26,7 +25,7 @@ public class WorkExperienceRemoveController {
     @DeleteMapping("/{workExperienceId}")
     public ApiResponse<Long> removeWorkExperience(
         @PathVariable(name = "workExperienceId") Long workExperienceId
-    ) throws PermissionDeniedException {
+    ) {
         Long id = removeWorkExperienceUseCase.removeWorkExperience(workExperienceId);
         return ApiResponse.success(id);
     }

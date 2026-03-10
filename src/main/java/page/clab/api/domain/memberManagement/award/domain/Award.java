@@ -10,7 +10,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.memberManagement.award.application.dto.request.AwardUpdateRequestDto;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
-import page.clab.api.global.exception.PermissionDeniedException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Getter
 @Setter
@@ -42,9 +43,9 @@ public class Award {
         return this.memberId.equals(memberId);
     }
 
-    public void validateAccessPermission(MemberDetailedInfoDto memberInfo) throws PermissionDeniedException {
+    public void validateAccessPermission(MemberDetailedInfoDto memberInfo) {
         if (!isOwner(memberInfo.getMemberId()) && !memberInfo.isAdminRole()) {
-            throw new PermissionDeniedException("해당 게시글을 수정/삭제할 권한이 없습니다.");
+            throw new BaseException(ErrorCode.PERMISSION_DENIED, "해당 게시글을 수정/삭제할 권한이 없습니다.");
         }
     }
 }

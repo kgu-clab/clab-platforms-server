@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.community.comment.application.dto.request.CommentUpdateRequestDto;
 import page.clab.api.domain.community.comment.application.port.in.UpdateCommentUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
-import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
 @RequestMapping("/api/v1/comments")
@@ -29,7 +28,7 @@ public class CommentUpdateController {
     public ApiResponse<Long> updateComment(
         @PathVariable(name = "commentId") Long commentId,
         @Valid @RequestBody CommentUpdateRequestDto requestDto
-    ) throws PermissionDeniedException {
+    ) {
         Long id = updateCommentUseCase.updateComment(commentId, requestDto);
         return ApiResponse.success(id);
     }

@@ -10,7 +10,6 @@ import page.clab.api.domain.memberManagement.workExperience.application.port.out
 import page.clab.api.domain.memberManagement.workExperience.application.port.out.UpdateWorkExperiencePort;
 import page.clab.api.domain.memberManagement.workExperience.domain.WorkExperience;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
-import page.clab.api.global.exception.PermissionDeniedException;
 
 @Service
 @RequiredArgsConstructor
@@ -22,8 +21,7 @@ public class WorkExperienceUpdateService implements UpdateWorkExperienceUseCase 
 
     @Override
     @Transactional
-    public Long updateWorkExperience(Long workExperienceId, WorkExperienceUpdateRequestDto requestDto)
-        throws PermissionDeniedException {
+    public Long updateWorkExperience(Long workExperienceId, WorkExperienceUpdateRequestDto requestDto) {
         MemberDetailedInfoDto currentMemberInfo = externalRetrieveMemberUseCase.getCurrentMemberDetailedInfo();
         WorkExperience workExperience = retrieveWorkExperiencePort.getById(workExperienceId);
         workExperience.validateAccessPermission(currentMemberInfo);

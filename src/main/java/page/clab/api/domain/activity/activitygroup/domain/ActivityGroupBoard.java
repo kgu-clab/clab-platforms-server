@@ -26,13 +26,12 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.springframework.util.CollectionUtils;
 import page.clab.api.domain.activity.activitygroup.dto.request.ActivityGroupBoardUpdateRequestDto;
-import page.clab.api.domain.activity.activitygroup.exception.AssignmentBoardHasNoDueDateTimeException;
-import page.clab.api.domain.activity.activitygroup.exception.FeedbackBoardHasNoContentException;
 import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.common.file.application.UploadedFileService;
 import page.clab.api.global.common.file.domain.UploadedFile;
-import page.clab.api.global.exception.PermissionDeniedException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Entity
 @Getter
@@ -98,9 +97,9 @@ public class ActivityGroupBoard extends BaseEntity {
         return this.memberId.equals(memberId);
     }
 
-    public void validateAccessPermission(Member member) throws PermissionDeniedException {
+    public void validateAccessPermission(Member member) {
         if (!isOwner(member.getId()) && !member.isAdminRole()) {
-            throw new PermissionDeniedException("해당 활동 그룹 게시판을 수정/삭제할 권한이 없습니다.");
+            throw new BaseException(ErrorCode.PERMISSION_DENIED, "해당 활동 그룹 게시판을 수정/삭제할 권한이 없습니다.");
         }
     }
 
@@ -112,11 +111,11 @@ public class ActivityGroupBoard extends BaseEntity {
         return this.category.equals(ActivityGroupBoardCategory.FEEDBACK);
     }
 
-    public void validateAccessPermission(Member member, List<GroupMember> leaders) throws PermissionDeniedException {
+    public void validateAccessPermission(Member member, List<GroupMember> leaders) {
         if (!member.isAdminRole() && !CollectionUtils.isEmpty(leaders) && leaders.stream()
             .noneMatch(leader -> leader.isOwner(member.getId()))) {
             if (this.isAssignment()) {
-                throw new PermissionDeniedException("과제 게시판에 접근할 권한이 없습니다.");
+                throw new BaseException(ErrorCode.PERMISSION_DENIED, "과제 게시판에 접근할 권한이 없습니다.");
             }
         }
     }
@@ -125,13 +124,13 @@ public class ActivityGroupBoard extends BaseEntity {
         if (this.isAssignment()) {
             LocalDateTime dueDateTime = this.getDueDateTime();
             if (dueDateTime == null) {
-                throw new AssignmentBoardHasNoDueDateTimeException();
+                throw new BaseException(ErrorCode.ASSIGNMENT_BOARD_HAS_NO_DUE_DATE);
             }
         }
         if (this.isFeedback()) {
             String content = this.getContent();
             if (content.isEmpty()) {
-                throw new FeedbackBoardHasNoContentException();
+                throw new BaseException(ErrorCode.FEEDBACK_BOARD_HAS_NO_CONTENT);
             }
         }
     }

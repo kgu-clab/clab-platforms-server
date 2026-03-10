@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.memberManagement.award.application.port.in.RemoveAwardUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
-import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
 @RequestMapping("/api/v1/awards")
@@ -26,7 +25,7 @@ public class AwardRemoveController {
     @DeleteMapping("/{awardId}")
     public ApiResponse<Long> removeAward(
         @PathVariable(name = "awardId") Long awardId
-    ) throws PermissionDeniedException {
+    ) {
         Long id = removeAwardUseCase.removeAward(awardId);
         return ApiResponse.success(id);
     }

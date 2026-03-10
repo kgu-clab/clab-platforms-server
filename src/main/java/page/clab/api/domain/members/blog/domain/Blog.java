@@ -10,7 +10,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.domain.members.blog.application.dto.request.BlogUpdateRequestDto;
-import page.clab.api.global.exception.PermissionDeniedException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Getter
 @Setter
@@ -45,9 +46,9 @@ public class Blog {
         return this.memberId.equals(memberId);
     }
 
-    public void validateAccessPermission(Member member) throws PermissionDeniedException {
+    public void validateAccessPermission(Member member) {
         if (!isOwner(member.getId()) && !member.isAdminRole()) {
-            throw new PermissionDeniedException("해당 게시글을 수정/삭제할 권한이 없습니다.");
+            throw new BaseException(ErrorCode.PERMISSION_DENIED, "해당 게시글을 수정/삭제할 권한이 없습니다.");
         }
     }
 }

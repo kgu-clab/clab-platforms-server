@@ -10,7 +10,8 @@ import page.clab.api.domain.auth.blacklistIp.application.port.out.RegisterBlackl
 import page.clab.api.domain.auth.blacklistIp.application.port.out.RemoveBlacklistIpPort;
 import page.clab.api.domain.auth.blacklistIp.application.port.out.RetrieveBlacklistIpPort;
 import page.clab.api.domain.auth.blacklistIp.domain.BlacklistIp;
-import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Component
 @RequiredArgsConstructor
@@ -39,7 +40,8 @@ public class BlacklistIpPersistenceAdapter implements
     public BlacklistIp getByIpAddress(String ipAddress) {
         return blacklistIpRepository.findByIpAddress(ipAddress)
             .map(blacklistIpMapper::toDomain)
-            .orElseThrow(() -> new NotFoundException("[BlacklistIp] IP: " + ipAddress + "에 해당하는 블랙리스트 IP가 존재하지 않습니다."));
+            .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND,
+                "[BlacklistIp] IP: " + ipAddress + "에 해당하는 블랙리스트 IP가 존재하지 않습니다."));
     }
 
     @Override

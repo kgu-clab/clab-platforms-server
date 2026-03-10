@@ -24,7 +24,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import page.clab.api.domain.auth.login.application.dto.response.TokenInfo;
 import page.clab.api.domain.memberManagement.member.domain.Role;
-import page.clab.api.global.auth.exception.TokenValidateException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Component
 @Slf4j
@@ -86,7 +87,7 @@ public class JwtTokenProvider {
         Claims claims = parseClaims(token);
 
         if (claims.get("role") == null) {
-            throw new TokenValidateException("권한 정보가 없는 토큰입니다.");
+            throw new BaseException(ErrorCode.TOKEN_INVALID, "권한 정보가 없는 토큰입니다.");
         }
 
         Collection<? extends GrantedAuthority> authorities =

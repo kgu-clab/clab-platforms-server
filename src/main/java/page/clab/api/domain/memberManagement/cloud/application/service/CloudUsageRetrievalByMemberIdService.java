@@ -11,7 +11,6 @@ import page.clab.api.domain.memberManagement.cloud.application.port.in.RetrieveC
 import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberUseCase;
 import page.clab.api.domain.memberManagement.member.application.port.out.RetrieveMemberPort;
 import page.clab.api.domain.memberManagement.member.domain.Member;
-import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.util.FileSystemUtil;
 
 @Service
@@ -27,7 +26,7 @@ public class CloudUsageRetrievalByMemberIdService implements RetrieveCloudUsageB
 
     @Override
     @Transactional(readOnly = true)
-    public CloudUsageInfo retrieveCloudUsage(String memberId) throws PermissionDeniedException {
+    public CloudUsageInfo retrieveCloudUsage(String memberId) {
         Member currentMember = retrieveMemberUseCase.getCurrentMember();
         Member targetMember = retrieveMemberPort.getById(memberId);
         targetMember.validateAccessPermissionForCloud(currentMember);

@@ -14,8 +14,6 @@ import page.clab.api.domain.memberManagement.member.application.dto.response.Mem
 import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMembersByConditionsUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.exception.InvalidColumnException;
-import page.clab.api.global.exception.SortingArgumentException;
 import page.clab.api.global.util.PageableUtils;
 
 @RestController
@@ -38,7 +36,7 @@ public class MembersByConditionsRetrievalController {
         @RequestParam(name = "size", defaultValue = "20") int size,
         @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
         @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
-    ) throws SortingArgumentException, InvalidColumnException {
+    ) {
         Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, MemberResponseDto.class);
         PagedResponseDto<MemberResponseDto> members = retrieveMembersByConditionsUseCase.retrieveMembers(id, name,
             pageable);

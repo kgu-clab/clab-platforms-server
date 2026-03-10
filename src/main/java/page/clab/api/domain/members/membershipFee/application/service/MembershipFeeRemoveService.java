@@ -9,7 +9,6 @@ import page.clab.api.domain.members.membershipFee.application.port.out.RegisterM
 import page.clab.api.domain.members.membershipFee.application.port.out.RetrieveMembershipFeePort;
 import page.clab.api.domain.members.membershipFee.domain.MembershipFee;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
-import page.clab.api.global.exception.PermissionDeniedException;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +20,7 @@ public class MembershipFeeRemoveService implements RemoveMembershipFeeUseCase {
 
     @Transactional
     @Override
-    public Long removeMembershipFee(Long membershipFeeId) throws PermissionDeniedException {
+    public Long removeMembershipFee(Long membershipFeeId) {
         MemberDetailedInfoDto currentMemberInfo = externalRetrieveMemberUseCase.getCurrentMemberDetailedInfo();
         MembershipFee membershipFee = retrieveMembershipFeePort.getById(membershipFeeId);
         membershipFee.validateAccessPermission(currentMemberInfo);

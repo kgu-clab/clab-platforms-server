@@ -11,7 +11,8 @@ import page.clab.api.domain.memberManagement.position.application.port.in.Retrie
 import page.clab.api.domain.memberManagement.position.application.port.out.RetrievePositionPort;
 import page.clab.api.domain.memberManagement.position.domain.Position;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
-import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +28,7 @@ public class MyPositionsByYearRetrievalService implements RetrieveMyPositionsByY
         List<Position> positions = retrievePositionPort.findAllByMemberIdAndYearOrderByPositionTypeAsc(
             currentMemberInfo.getMemberId(), year);
         if (positions.isEmpty()) {
-            throw new NotFoundException("해당 멤버의 " + year + "년도 직책이 존재하지 않습니다.");
+            throw new BaseException(ErrorCode.NOT_FOUND, "해당 멤버의 " + year + "년도 직책이 존재하지 않습니다.");
         }
         return mapper.toDto(positions, currentMemberInfo);
     }

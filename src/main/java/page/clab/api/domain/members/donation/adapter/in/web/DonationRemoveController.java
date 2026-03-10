@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.members.donation.application.port.in.RemoveDonationUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
-import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
 @RequestMapping("/api/v1/donations")
@@ -25,7 +24,7 @@ public class DonationRemoveController {
     @DeleteMapping("/{donationId}")
     public ApiResponse<Long> removeDonation(
         @PathVariable(name = "donationId") Long donationId
-    ) throws PermissionDeniedException {
+    ) {
         Long id = removeDonationUseCase.removeDonation(donationId);
         return ApiResponse.success(id);
     }

@@ -20,7 +20,8 @@ import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.domain.memberManagement.member.domain.Role;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.auth.util.AuthUtil;
-import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Service
 @RequiredArgsConstructor
@@ -40,7 +41,7 @@ public class ExternalMemberRetrievalService implements ExternalRetrieveMemberUse
     @Override
     public void ensureMemberExists(String memberId) {
         if (!checkMemberExistencePort.existsById(memberId)) {
-            throw new NotFoundException("[Member] id: " + memberId + "에 해당하는 회원이 존재하지 않습니다.");
+            throw new BaseException(ErrorCode.NOT_FOUND, "[Member] id: " + memberId + "에 해당하는 회원이 존재하지 않습니다.");
         }
     }
 

@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.memberManagement.member.application.dto.request.MemberUpdateRequestDto;
 import page.clab.api.domain.memberManagement.member.application.port.in.UpdateMemberUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
-import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
 @RequestMapping("/api/v1/members")
@@ -29,7 +28,7 @@ public class MemberInfoUpdateController {
     public ApiResponse<String> updateMemberInfo(
         @PathVariable(name = "memberId") String memberId,
         @RequestBody MemberUpdateRequestDto requestDto
-    ) throws PermissionDeniedException {
+    ) {
         String id = updateMemberUseCase.updateMember(memberId, requestDto);
         return ApiResponse.success(id);
     }

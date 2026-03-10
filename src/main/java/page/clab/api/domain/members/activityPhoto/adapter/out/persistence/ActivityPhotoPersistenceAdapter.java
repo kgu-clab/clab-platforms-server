@@ -7,7 +7,8 @@ import org.springframework.stereotype.Component;
 import page.clab.api.domain.members.activityPhoto.application.port.out.RegisterActivityPhotoPort;
 import page.clab.api.domain.members.activityPhoto.application.port.out.RetrieveActivityPhotoPort;
 import page.clab.api.domain.members.activityPhoto.domain.ActivityPhoto;
-import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Component
 @RequiredArgsConstructor
@@ -30,7 +31,8 @@ public class ActivityPhotoPersistenceAdapter implements
         return activityPhotoRepository.findById(activityPhotoId)
             .map(activityPhotoMapper::toDomain)
             .orElseThrow(
-                () -> new NotFoundException("[ActivityPhoto] id: " + activityPhotoId + "에 해당하는 활동 사진이 존재하지 않습니다."));
+                () -> new BaseException(ErrorCode.NOT_FOUND,
+                    "[ActivityPhoto] id: " + activityPhotoId + "에 해당하는 활동 사진이 존재하지 않습니다."));
     }
 
     @Override

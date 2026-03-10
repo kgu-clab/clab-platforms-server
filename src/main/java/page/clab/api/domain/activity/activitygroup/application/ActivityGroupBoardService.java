@@ -25,8 +25,6 @@ import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupBoa
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupBoardResponseDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.AssignmentSubmissionWithFeedbackResponseDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.FeedbackResponseDto;
-import page.clab.api.domain.activity.activitygroup.exception.AlreadySubmittedThisWeekAssignmentException;
-import page.clab.api.domain.activity.activitygroup.exception.InvalidParentBoardException;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberBasicInfoDto;
 import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.domain.memberManagement.member.domain.Role;
@@ -35,8 +33,8 @@ import page.clab.api.external.memberManagement.notification.application.port.Ext
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.file.application.UploadedFileService;
 import page.clab.api.global.common.file.domain.UploadedFile;
-import page.clab.api.global.exception.NotFoundException;
-import page.clab.api.global.exception.PermissionDeniedException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Service
 @RequiredArgsConstructor
@@ -62,11 +60,11 @@ public class ActivityGroupBoardService {
      * @param activityGroupId 활동 그룹의 ID
      * @param requestDto      게시판 생성 요청 DTO
      * @return ActivityGroupBoardReferenceDto
-     * @throws PermissionDeniedException 권한이 없는 경우 예외 발생
+     * @throws BaseException {@code ErrorCode.PERMISSION_DENIED} - 권한이 없는 경우 예외 발생
      */
     @Transactional
     public ActivityGroupBoardReferenceDto createActivityGroupBoard(Long parentId, Long activityGroupId,
-        ActivityGroupBoardRequestDto requestDto) throws PermissionDeniedException {
+        ActivityGroupBoardRequestDto requestDto) {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupById(activityGroupId);
 
@@ -91,15 +89,14 @@ public class ActivityGroupBoardService {
         return mapper.of(board.getId(), activityGroupId, parentId);
     }
 
-    private void validateGroupMember(ActivityGroup activityGroup, Member currentMember)
-        throws PermissionDeniedException {
+    private void validateGroupMember(ActivityGroup activityGroup, Member currentMember) {
         if (!activityGroupMemberService.isGroupMember(activityGroup, currentMember.getId())) {
-            throw new PermissionDeniedException("해당 활동 그룹의 멤버가 아닙니다.");
+            throw new BaseException(ErrorCode.PERMISSION_DENIED, "해당 활동 그룹의 멤버가 아닙니다.");
         }
     }
 
     private void validateCanCreateBoard(ActivityGroup activityGroup, ActivityGroupBoardCategory category,
-        Member currentMember) throws PermissionDeniedException {
+        Member currentMember) {
         Role role = currentMember.getRole();
         boolean isRequireAdminOrLeaderCategory = category.isNotice() ||
             category.isWeeklyActivity() ||
@@ -109,7 +106,7 @@ public class ActivityGroupBoardService {
         // NOTICE, WEEKLY_ACTIVITY, ASSIGNMENT, FEEDBACK 카테고리에서 권한이 ADMIN 이상이 아니거나, 리더가 아니면 예외처리
         if (isRequireAdminOrLeaderCategory && !(role.isHigherThanOrEqual(Role.ADMIN)
             || activityGroupAdminService.hasLeaderOrAdminRole(activityGroup, currentMember))) {
-            throw new PermissionDeniedException("해당 카테고리에서 게시글을 작성할 권한이 없습니다.");
+            throw new BaseException(ErrorCode.PERMISSION_DENIED, "해당 카테고리에서 게시글을 작성할 권한이 없습니다.");
         }
     }
 
@@ -141,7 +138,7 @@ public class ActivityGroupBoardService {
             boolean hasSubmitted = activityGroupBoardRepository.existsByParentIdAndCategoryAndMemberId(parentId,
                 ActivityGroupBoardCategory.SUBMIT, memberId);
             if (hasSubmitted) {
-                throw new AlreadySubmittedThisWeekAssignmentException();
+                throw new BaseException(ErrorCode.ALREADY_SUBMITTED_THIS_WEEK_ASSIGNMENT);
             }
         }
     }
@@ -157,13 +154,12 @@ public class ActivityGroupBoardService {
     }
 
     @Transactional(readOnly = true)
-    public ActivityGroupBoardResponseDto getActivityGroupBoard(Long activityGroupBoardId)
-        throws PermissionDeniedException {
+    public ActivityGroupBoardResponseDto getActivityGroupBoard(Long activityGroupBoardId) {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroupBoard board = getActivityGroupBoardById(activityGroupBoardId);
         validateGroupMember(board.getActivityGroup(), currentMember);
         if (!hasAccessToBoard(board.getActivityGroup(), board, currentMember)) {
-            throw new PermissionDeniedException("해당 게시물을 조회할 권한이 없습니다.");
+            throw new BaseException(ErrorCode.PERMISSION_DENIED, "해당 게시물을 조회할 권한이 없습니다.");
         }
         MemberBasicInfoDto memberBasicInfoDto = externalRetrieveMemberUseCase.getMemberBasicInfoById(
             board.getMemberId());
@@ -172,7 +168,7 @@ public class ActivityGroupBoardService {
 
     @Transactional(readOnly = true)
     public PagedResponseDto<ActivityGroupBoardResponseDto> getActivityGroupBoardByCategory(Long activityGroupId,
-        ActivityGroupBoardCategory category, Pageable pageable) throws PermissionDeniedException {
+        ActivityGroupBoardCategory category, Pageable pageable) {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupById(activityGroupId);
         validateGroupMember(activityGroup, currentMember);
@@ -192,7 +188,7 @@ public class ActivityGroupBoardService {
 
     @Transactional(readOnly = true)
     public PagedResponseDto<ActivityGroupBoardChildResponseDto> getActivityGroupBoardByParent(Long parentId,
-        Pageable pageable) throws PermissionDeniedException {
+        Pageable pageable) {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroupBoard parentBoard = getActivityGroupBoardById(parentId);
         Long activityGroupId = parentBoard.getActivityGroup().getId();
@@ -238,7 +234,7 @@ public class ActivityGroupBoardService {
 
     @Transactional
     public ActivityGroupBoardReferenceDto updateActivityGroupBoard(Long activityGroupBoardId,
-        ActivityGroupBoardUpdateRequestDto requestDto) throws PermissionDeniedException {
+        ActivityGroupBoardUpdateRequestDto requestDto) {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroupBoard board = getActivityGroupBoardById(activityGroupBoardId);
         board.validateAccessPermission(currentMember);
@@ -249,8 +245,7 @@ public class ActivityGroupBoardService {
         return mapper.of(board.getId(), board.getActivityGroup().getId(), parentId);
     }
 
-    public ActivityGroupBoardReferenceDto deleteActivityGroupBoard(Long activityGroupBoardId)
-        throws PermissionDeniedException {
+    public ActivityGroupBoardReferenceDto deleteActivityGroupBoard(Long activityGroupBoardId) {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroupBoard board = getActivityGroupBoardById(activityGroupBoardId);
         board.validateAccessPermission(currentMember);
@@ -271,7 +266,7 @@ public class ActivityGroupBoardService {
 
     public ActivityGroupBoard getActivityGroupBoardById(Long activityGroupBoardId) {
         return activityGroupBoardRepository.findById(activityGroupBoardId)
-            .orElseThrow(() -> new NotFoundException("해당 활동 그룹 게시글을 찾을 수 없습니다."));
+            .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND, "해당 활동 그룹 게시글을 찾을 수 없습니다."));
     }
 
     private List<ActivityGroupBoard> getChildBoards(Long activityGroupBoardId) {
@@ -302,20 +297,20 @@ public class ActivityGroupBoardService {
      *
      * @param category 게시판 카테고리
      * @param parentId 부모 게시판의 ID
-     * @throws InvalidParentBoardException 부모 게시판이 유효하지 않은 경우 예외 발생
+     * @throws BaseException {@code ErrorCode.INVALID_PARENT_BOARD} 부모 게시판이 유효하지 않은 경우 예외 발생
      */
-    private void validateParentBoard(ActivityGroupBoardCategory category, Long parentId)
-        throws InvalidParentBoardException {
+    private void validateParentBoard(ActivityGroupBoardCategory category, Long parentId) {
         if ((category.isNotice() || category.isWeeklyActivity())) {
             if (parentId != null) {
-                throw new InvalidParentBoardException(category.getDescription() + " 게시물은 부모 게시판을 가질 수 없습니다.");
+                throw new BaseException(ErrorCode.INVALID_PARENT_BOARD,
+                    category.getDescription() + " 게시물은 부모 게시판을 가질 수 없습니다.");
             } else {
                 return;
             }
         }
 
         if ((category.isAssignment() || category.isSubmit() || category.isFeedback()) && parentId == null) {
-            throw new InvalidParentBoardException(category.getDescription() + " 게시물은 부모 게시판이 필요합니다.");
+            throw new BaseException(ErrorCode.INVALID_PARENT_BOARD, category.getDescription() + " 게시물은 부모 게시판이 필요합니다.");
         }
 
         ActivityGroupBoard parentBoard = getActivityGroupBoardById(parentId);
@@ -324,7 +319,7 @@ public class ActivityGroupBoardService {
             case ASSIGNMENT -> ActivityGroupBoardCategory.WEEKLY_ACTIVITY;
             case SUBMIT -> ActivityGroupBoardCategory.ASSIGNMENT;
             case FEEDBACK -> ActivityGroupBoardCategory.SUBMIT;
-            default -> throw new InvalidParentBoardException("유효하지 않은 카테고리입니다.");
+            default -> throw new BaseException(ErrorCode.INVALID_PARENT_BOARD, "유효하지 않은 카테고리입니다.");
         };
 
         if (parentBoard.getCategory() != expectedParentCategory) {
@@ -334,7 +329,7 @@ public class ActivityGroupBoardService {
                 case FEEDBACK -> "피드백의 부모 게시판은 제출 게시판이어야 합니다.";
                 default -> "유효하지 않은 카테고리입니다.";
             };
-            throw new InvalidParentBoardException(message);
+            throw new BaseException(ErrorCode.INVALID_PARENT_BOARD, message);
         }
     }
 

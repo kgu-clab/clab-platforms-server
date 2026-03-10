@@ -10,10 +10,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.community.board.application.dto.request.BoardUpdateRequestDto;
-import page.clab.api.domain.community.board.application.exception.InvalidBoardCategoryHashtagException;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.global.common.file.domain.UploadedFile;
-import page.clab.api.global.exception.PermissionDeniedException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Getter
 @Setter
@@ -62,28 +62,27 @@ public class Board {
         return this.memberId.equals(memberId);
     }
 
-    public void validateAccessPermission(MemberDetailedInfoDto memberInfo) throws PermissionDeniedException {
+    public void validateAccessPermission(MemberDetailedInfoDto memberInfo) {
         if (!isOwner(memberInfo.getMemberId()) && !memberInfo.isAdminRole()) {
-            throw new PermissionDeniedException("해당 게시글을 수정할 권한이 없습니다.");
+            throw new BaseException(ErrorCode.PERMISSION_DENIED, "해당 게시글을 수정할 권한이 없습니다.");
         }
     }
 
-    public void validateAccessPermissionForCreation(MemberDetailedInfoDto currentMemberInfo)
-        throws PermissionDeniedException {
+    public void validateAccessPermissionForCreation(MemberDetailedInfoDto currentMemberInfo) {
         if (this.isNotice() && !currentMemberInfo.isAdminRole()) {
-            throw new PermissionDeniedException("공지사항은 관리자만 작성할 수 있습니다.");
+            throw new BaseException(ErrorCode.PERMISSION_DENIED, "공지사항은 관리자만 작성할 수 있습니다.");
         }
     }
 
     public void validateBoardHashtagRegistration(List<String> hashtagNames) {
         if (!isDevelopmentQna() && (hashtagNames != null && !hashtagNames.isEmpty())) {
-            throw new InvalidBoardCategoryHashtagException("개발질문 게시판에만 해시태그를 등록할 수 있습니다.");
+            throw new BaseException(ErrorCode.INVALID_BOARD_CATEGORY_HASHTAG, "개발질문 게시판에만 해시태그를 등록할 수 있습니다.");
         }
     }
 
     public void validateBoardHashtagUpdate() {
         if (!isDevelopmentQna()) {
-            throw new InvalidBoardCategoryHashtagException("개발질문 게시판에만 해시태그를 적용할 수 있습니다.");
+            throw new BaseException(ErrorCode.INVALID_BOARD_CATEGORY_HASHTAG, "개발질문 게시판에만 해시태그를 적용할 수 있습니다.");
         }
     }
 }

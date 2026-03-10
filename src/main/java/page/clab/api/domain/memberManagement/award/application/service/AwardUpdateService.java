@@ -10,7 +10,6 @@ import page.clab.api.domain.memberManagement.award.application.port.out.Retrieve
 import page.clab.api.domain.memberManagement.award.domain.Award;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
-import page.clab.api.global.exception.PermissionDeniedException;
 
 @Service
 @RequiredArgsConstructor
@@ -22,7 +21,7 @@ public class AwardUpdateService implements UpdateAwardUseCase {
 
     @Transactional
     @Override
-    public Long updateAward(Long awardId, AwardUpdateRequestDto requestDto) throws PermissionDeniedException {
+    public Long updateAward(Long awardId, AwardUpdateRequestDto requestDto) {
         MemberDetailedInfoDto currentMemberInfo = externalRetrieveMemberUseCase.getCurrentMemberDetailedInfo();
         Award award = retrieveAwardPort.getById(awardId);
         award.validateAccessPermission(currentMemberInfo);
