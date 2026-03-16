@@ -8,6 +8,7 @@ import lombok.Getter;
 public enum BookLoanStatus {
 
     PENDING("PENDING", "대출 신청"),
+    CANCELLED("CANCELLED", "대출 취소"),
     APPROVED("APPROVED", "대출 승인"),
     REJECTED("REJECTED", "대출 거절"),
     RETURNED("RETURNED", "반납 완료");
