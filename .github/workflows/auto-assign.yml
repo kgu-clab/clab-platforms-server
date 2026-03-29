@@ -3,8 +3,6 @@ name: Auto Assignees and PR Reviewers
 on:
   issues:
     types: [ opened ]
-  pull_request:
-    types: [ opened, ready_for_review ]
 
 jobs:
   auto_assign:
@@ -16,10 +14,3 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           assignees: ${{ github.actor }}
-
-      - name: Assign PR reviewers
-        if: ${{ github.event_name == 'pull_request' }}
-        uses: hkusu/review-assign-action@v1
-        with:
-          assignees: ${{ github.actor }}
-          reviewers: mingmingmon, SongJaeHoonn, limehee
