@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberBorrowerInfoDto;
+import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.global.exception.BaseException;
 import page.clab.api.global.exception.ErrorCode;
 
@@ -86,5 +87,22 @@ public class BookLoanRecord {
             throw new BaseException(ErrorCode.BOOK_LOAN_STATUS_NOT_PENDING);
         }
         this.status = BookLoanStatus.REJECTED;
+    }
+
+    public void cancel() {
+        if (this.status != BookLoanStatus.PENDING) {
+            throw new BaseException(ErrorCode.BOOK_LOAN_STATUS_NOT_PENDING);
+        }
+        this.status = BookLoanStatus.CANCELLED;
+    }
+
+    public boolean isOwner(String memberId) {
+        return this.borrowerId.equals(memberId);
+    }
+
+    public void validateAccessPermission(MemberDetailedInfoDto memberInfo) {
+        if (!isOwner(memberInfo.getMemberId()) && !memberInfo.isAdminRole()) {
+            throw new BaseException(ErrorCode.PERMISSION_DENIED, "해당 도서 대출을 취소할 권한이 없습니다.");
+        }
     }
 }
