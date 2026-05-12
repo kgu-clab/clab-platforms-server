@@ -11,7 +11,7 @@ public class CommentMyResponseDto {
     private Long id;
     private Long boardId;
     private String boardCategory;
-    private String writer;
+    private String writerName;
     private String writerImageUrl;
     private String content;
     private Long likes;

@@ -36,7 +36,7 @@ public class CommentDtoMapper {
             .id(comment.getId())
             .boardId(boardInfo.getBoardId())
             .boardCategory(boardInfo.getCategory().getKey())
-            .writer(comment.isWantAnonymous() ? comment.getNickname() : memberInfo.getMemberName())
+            .writerName(comment.isWantAnonymous() ? comment.getNickname() : memberInfo.getMemberName())
             .writerImageUrl(comment.isWantAnonymous() ? null : memberInfo.getImageUrl())
             .content(comment.getContent())
             .likes(comment.getLikes())
