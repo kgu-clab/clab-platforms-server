@@ -12,6 +12,7 @@ public class AccuseMyResponseDto {
 
     private TargetType targetType;
     private Long targetId;
+    private Long redirectId;
     private String reason;
     private AccuseStatus accuseStatus;
     private LocalDateTime createdAt;

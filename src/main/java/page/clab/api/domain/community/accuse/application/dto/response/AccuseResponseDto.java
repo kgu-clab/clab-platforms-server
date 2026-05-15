@@ -15,6 +15,7 @@ public class AccuseResponseDto {
     private List<MemberBasicInfoDto> members;
     private TargetType targetType;
     private Long targetId;
+    private Long redirectId;
     private String reason;
     private AccuseStatus accuseStatus;
     private Long accuseCount;

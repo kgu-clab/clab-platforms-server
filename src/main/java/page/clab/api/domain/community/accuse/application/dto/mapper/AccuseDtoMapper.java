@@ -31,21 +31,23 @@ public class AccuseDtoMapper {
             .build();
     }
 
-    public AccuseMyResponseDto toDto(Accuse accuse) {
+    public AccuseMyResponseDto toDto(Accuse accuse, Long redirectId) {
         return AccuseMyResponseDto.builder()
             .targetType(accuse.getTarget().getTargetType())
             .targetId(accuse.getTarget().getTargetReferenceId())
+            .redirectId(redirectId)
             .reason(accuse.getReason())
             .accuseStatus(accuse.getTarget().getAccuseStatus())
             .createdAt(accuse.getTarget().getCreatedAt())
             .build();
     }
 
-    public AccuseResponseDto toDto(Accuse accuse, List<MemberBasicInfoDto> members) {
+    public AccuseResponseDto toDto(Accuse accuse, List<MemberBasicInfoDto> members, Long redirectId) {
         return AccuseResponseDto.builder()
             .members(members)
             .targetType(accuse.getTarget().getTargetType())
             .targetId(accuse.getTarget().getTargetReferenceId())
+            .redirectId(redirectId)
             .reason(accuse.getReason())
             .accuseStatus(accuse.getTarget().getAccuseStatus())
             .accuseCount(accuse.getTarget().getAccuseCount())

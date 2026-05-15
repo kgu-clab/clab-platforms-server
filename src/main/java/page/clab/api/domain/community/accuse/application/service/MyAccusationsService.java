@@ -10,6 +10,8 @@ import page.clab.api.domain.community.accuse.application.dto.response.AccuseMyRe
 import page.clab.api.domain.community.accuse.application.port.in.RetrieveMyAccusationsUseCase;
 import page.clab.api.domain.community.accuse.application.port.out.RetrieveAccusePort;
 import page.clab.api.domain.community.accuse.domain.Accuse;
+import page.clab.api.domain.community.accuse.domain.TargetType;
+import page.clab.api.external.community.comment.application.port.ExternalRetrieveCommentUseCase;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
@@ -19,6 +21,7 @@ public class MyAccusationsService implements RetrieveMyAccusationsUseCase {
 
     private final RetrieveAccusePort retrieveAccusePort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
+    private final ExternalRetrieveCommentUseCase externalRetrieveCommentUseCase;
     private final AccuseDtoMapper mapper;
 
     @Transactional(readOnly = true)
@@ -26,6 +29,13 @@ public class MyAccusationsService implements RetrieveMyAccusationsUseCase {
     public PagedResponseDto<AccuseMyResponseDto> retrieveMyAccusations(Pageable pageable) {
         String currentMemberId = externalRetrieveMemberUseCase.getCurrentMemberId();
         Page<Accuse> accuses = retrieveAccusePort.findByMemberId(currentMemberId, pageable);
-        return new PagedResponseDto<>(accuses.map(mapper::toDto));
+        return new PagedResponseDto<>(accuses.map(accuse -> mapper.toDto(accuse, resolveRedirectId(accuse))));
+    }
+
+    private Long resolveRedirectId(Accuse accuse) {
+        if (accuse.getTarget().getTargetType() == TargetType.COMMENT) {
+            return externalRetrieveCommentUseCase.getById(accuse.getTarget().getTargetReferenceId()).getBoardId();
+        }
+        return accuse.getTarget().getTargetReferenceId();
     }
 }
