@@ -29,4 +29,5 @@ COPY --from=build /app/snapshot-dependencies/ ./
 COPY --from=build /app/application/ ./
 
 # Run the application
-ENTRYPOINT ["java", "-Dspring.profiles.active=stage", "org.springframework.boot.loader.launch.JarLauncher"]
+# -XX:-UseBASE64Intrinsics mitigates CVE-2026-114938 (Java4Shell, AVX-512 Base64 RCE) until the JDK is upgraded to a patched build
+ENTRYPOINT ["java", "-XX:-UseBASE64Intrinsics", "-Dspring.profiles.active=stage", "org.springframework.boot.loader.launch.JarLauncher"]

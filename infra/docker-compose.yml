@@ -29,6 +29,9 @@ services:
     image: jenkins/jenkins:latest-jdk21
     container_name: jenkins
     restart: always
+    environment:
+      # Mitigates CVE-2026-114938 (Java4Shell, AVX-512 Base64 RCE); remove once the bundled JDK is patched
+      - JAVA_TOOL_OPTIONS=-XX:-UseBASE64Intrinsics
     ports:
       - 50000:50000
       - 8080:8080
@@ -39,9 +42,12 @@ services:
       - infra-network
 
   openjdk21:
-    image: openjdk:21-jdk
+    # openjdk:21-jdk is deprecated and will never receive the CVE-2026-114938 fix; use a maintained distribution
+    image: eclipse-temurin:21-jdk
     container_name: openjdk21
     restart: always
+    environment:
+      - JAVA_TOOL_OPTIONS=-XX:-UseBASE64Intrinsics
     command: tail -f /dev/null
     networks:
       - infra-network
