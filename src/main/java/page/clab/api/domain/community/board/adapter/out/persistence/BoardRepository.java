@@ -22,6 +22,8 @@ public interface BoardRepository extends JpaRepository<BoardJpaEntity, Long> {
 
     Page<BoardJpaEntity> findAllByCategory(BoardCategory category, Pageable pageable);
 
+    List<BoardJpaEntity> findAllByCategory(BoardCategory category);
+
     @Query(value = "SELECT b.* FROM board b WHERE b.is_deleted = true", nativeQuery = true)
     Page<BoardJpaEntity> findAllByIsDeletedTrue(Pageable pageable);
 

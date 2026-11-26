@@ -35,7 +35,8 @@ public class PaginationUtils {
                         } catch (Exception e) {
                             throw new RuntimeException(e);
                         }
-                    }
+                    },
+                    Comparator.nullsFirst(Comparator.naturalOrder())
                 );
                 return order.isAscending() ? itemComparator : itemComparator.reversed();
             })
