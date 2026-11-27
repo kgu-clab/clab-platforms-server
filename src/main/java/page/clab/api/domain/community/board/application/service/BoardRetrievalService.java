@@ -18,6 +18,7 @@ import page.clab.api.domain.memberManagement.member.application.dto.shared.Membe
 import page.clab.api.external.community.comment.application.port.ExternalRetrieveCommentUseCase;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.common.dto.PagedResponseDto;
+import page.clab.api.global.util.PaginationUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -32,9 +33,19 @@ public class BoardRetrievalService implements RetrieveBoardUseCase {
     @Transactional
     @Override
     public PagedResponseDto<BoardListResponseDto> retrieveBoards(Pageable pageable) {
+        if (!BoardSortableFields.canSortInDatabase(pageable)) {
+            return retrieveBoardsSortedInMemory(pageable);
+        }
         Page<Board> boards = retrieveBoardPort.findAll(pageable);
-        return new PagedResponseDto<>(boards.map(board ->
-            mapToBoardListResponseDto(board, getMemberDetailedInfoByBoard(board))));
+        return new PagedResponseDto<>(boards.map(this::toDto));
+    }
+
+    private PagedResponseDto<BoardListResponseDto> retrieveBoardsSortedInMemory(Pageable pageable) {
+        List<Board> boards = retrieveBoardPort.findAll();
+        List<BoardListResponseDto> boardListResponseDtos = boards.stream().map(this::toDto).toList();
+        List<BoardListResponseDto> paginatedBoardListResponseDtos =
+            PaginationUtils.applySortingAndSlicing(boardListResponseDtos, pageable);
+        return new PagedResponseDto<>(paginatedBoardListResponseDtos, boards.size(), pageable);
     }
 
     @Override
@@ -47,7 +58,8 @@ public class BoardRetrievalService implements RetrieveBoardUseCase {
     }
 
     @NotNull
-    private BoardListResponseDto mapToBoardListResponseDto(Board board, MemberDetailedInfoDto memberInfo) {
+    private BoardListResponseDto toDto(Board board) {
+        MemberDetailedInfoDto memberInfo = getMemberDetailedInfoByBoard(board);
         Long commentCount = externalRetrieveCommentUseCase.countByBoardId(board.getId());
         List<BoardHashtagResponseDto> boardHashtagInfos = retrieveBoardHashtagUseCase.getBoardHashtagInfoByBoardId(
             board.getId());

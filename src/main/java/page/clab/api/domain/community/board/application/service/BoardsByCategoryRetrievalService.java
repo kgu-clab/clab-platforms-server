@@ -18,6 +18,7 @@ import page.clab.api.domain.memberManagement.member.application.dto.shared.Membe
 import page.clab.api.external.community.comment.application.port.ExternalRetrieveCommentUseCase;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.common.dto.PagedResponseDto;
+import page.clab.api.global.util.PaginationUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -33,16 +34,30 @@ public class BoardsByCategoryRetrievalService implements RetrieveBoardsByCategor
     @Override
     public PagedResponseDto<BoardOverviewResponseDto> retrieveBoardsByCategory(BoardCategory category,
         Pageable pageable) {
+        if (!BoardSortableFields.canSortInDatabase(pageable)) {
+            return retrieveBoardsByCategorySortedInMemory(category, pageable);
+        }
         Page<Board> boards = retrieveBoardPort.findAllByCategory(category, pageable);
-        return new PagedResponseDto<>(boards.map(board -> {
-            long commentCount = externalRetrieveCommentUseCase.countByBoardId(board.getId());
-            List<BoardHashtagResponseDto> boardHashtagInfos = retrieveBoardHashtagUseCase.getBoardHashtagInfoByBoardId(
-                board.getId());
-            return mapper.toCategoryDto(board, getMemberDetailedInfoByBoard(board), commentCount, boardHashtagInfos);
-        }));
+        return new PagedResponseDto<>(boards.map(this::toDto));
+    }
+
+    private PagedResponseDto<BoardOverviewResponseDto> retrieveBoardsByCategorySortedInMemory(
+        BoardCategory category, Pageable pageable) {
+        List<Board> boards = retrieveBoardPort.findAllByCategory(category);
+        List<BoardOverviewResponseDto> boardOverviewResponseDtos = boards.stream().map(this::toDto).toList();
+        List<BoardOverviewResponseDto> paginatedBoardOverviewDtos =
+            PaginationUtils.applySortingAndSlicing(boardOverviewResponseDtos, pageable);
+        return new PagedResponseDto<>(paginatedBoardOverviewDtos, boards.size(), pageable);
     }
 
     private MemberDetailedInfoDto getMemberDetailedInfoByBoard(Board board) {
         return externalRetrieveMemberUseCase.getMemberDetailedInfoById(board.getMemberId());
+    }
+
+    private BoardOverviewResponseDto toDto(Board board) {
+        long commentCount = externalRetrieveCommentUseCase.countByBoardId(board.getId());
+        List<BoardHashtagResponseDto> boardHashtagInfos = retrieveBoardHashtagUseCase.getBoardHashtagInfoByBoardId(
+            board.getId());
+        return mapper.toCategoryDto(board, getMemberDetailedInfoByBoard(board), commentCount, boardHashtagInfos);
     }
 }

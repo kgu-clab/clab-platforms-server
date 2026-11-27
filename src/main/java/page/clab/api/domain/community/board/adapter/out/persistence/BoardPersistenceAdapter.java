@@ -67,6 +67,13 @@ public class BoardPersistenceAdapter implements
     }
 
     @Override
+    public List<Board> findAllByCategory(BoardCategory category) {
+        return boardRepository.findAllByCategory(category).stream()
+            .map(boardMapper::toDomain)
+            .collect(Collectors.toList());
+    }
+
+    @Override
     public Page<Board> findAllByIsDeletedTrue(Pageable pageable) {
         return boardRepository.findAllByIsDeletedTrue(pageable)
             .map(boardMapper::toDomain);

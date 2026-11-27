@@ -21,6 +21,8 @@ public interface RetrieveBoardPort {
 
     Page<Board> findAllByCategory(BoardCategory category, Pageable pageable);
 
+    List<Board> findAllByCategory(BoardCategory category);
+
     Page<Board> findAllByIsDeletedTrue(Pageable pageable);
 
     Page<Board> findAllByMemberId(String memberId, Pageable pageable);

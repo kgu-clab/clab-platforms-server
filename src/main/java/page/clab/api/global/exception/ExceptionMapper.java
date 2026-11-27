@@ -20,6 +20,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
+import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.AuthorizationServiceException;
@@ -52,6 +53,7 @@ public class ExceptionMapper {
         exceptionToErrorCodeMap.put(MissingServletRequestParameterException.class, ErrorCode.MISSING_PARAMETER);
         exceptionToErrorCodeMap.put(NoSuchFieldException.class, ErrorCode.NO_SUCH_FIELD);
         exceptionToErrorCodeMap.put(NumberFormatException.class, ErrorCode.NUMBER_FORMAT_ERROR);
+        exceptionToErrorCodeMap.put(PropertyReferenceException.class, ErrorCode.INVALID_COLUMN);
         exceptionToErrorCodeMap.put(StringIndexOutOfBoundsException.class, ErrorCode.INDEX_OUT_OF_BOUNDS);
         exceptionToErrorCodeMap.put(UnknownPathException.class, ErrorCode.UNKNOWN_PATH);
 
